@@ -5,10 +5,7 @@
  */
 package com.gcp.copilotdemo.api;
 
-import com.gcp.copilotdemo.model.KeyValuePairModel;
-import com.gcp.copilotdemo.model.OptionalIdentifiersModel;
-import com.gcp.copilotdemo.model.ProblemFormatItemModel;
-import com.gcp.copilotdemo.model.SettlementModel;
+import com.gcp.copilotdemo.model.*;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -19,9 +16,7 @@ import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
-//@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2022-11-13T12:08:29.158795400+05:30[Asia/Calcutta]")
 @Validated
-//@Api(value = "Settlements", description = "the Settlements API")
 public interface SettlementsApi {
 
     default SettlementsApiDelegate getDelegate() {
@@ -34,17 +29,18 @@ public interface SettlementsApi {
      *
      * @param settlementModel settlement to be created (required)
      * @return item created (status code 201)
-     *         or Errors occurred (status code 400)
-     *         or Forbidden (status code 403)
-     *         or an existing duplicate item already exists (status code 409)
+     * or Errors occurred (status code 400)
+     * or Forbidden (status code 403)
+     * or an existing duplicate item already exists (status code 409)
      */
     @ApiOperation(value = "adds a new settlement"
             , nickname = "createSettlement"
             , notes = "Creates a new settlement. All data fields are validated"
-            , response = SettlementModel.class
+            //, response = SettlementModel.class
+            , response = APIResponseModel.class
             , tags={ "settlements", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 201, message = "Settlement created", response = SettlementModel.class),
+        @ApiResponse(code = 201, message = "Settlement created", response = APIResponseModel.class),
         @ApiResponse(code = 400, message = "Errors occurred", response = ProblemFormatItemModel.class, responseContainer = "List"),
         @ApiResponse(code = 403, message = "Forbidden"),
         @ApiResponse(code = 409, message = "an existing duplicate item already exists") })
@@ -54,7 +50,7 @@ public interface SettlementsApi {
         produces = { "application/json", "application/problem+json" },
         consumes = { "application/json" }
     )
-    default ResponseEntity<SettlementModel> createSettlement(@ApiParam(value = "settlement to be created" ,required=true )  @Valid @RequestBody SettlementModel settlementModel) {
+    default APIResponseModel createSettlement(@ApiParam(value = "settlement to be created" ,required=true )  @Valid @RequestBody SettlementModel settlementModel) {
         return getDelegate().createSettlement(settlementModel);
     }
 
@@ -145,13 +141,17 @@ public interface SettlementsApi {
      *
      * @param id the unique resource identifier for the document (required)
      * @return single settlement (status code 200)
-     *         or Forbidden (status code 403)
-     *         or Not Found (status code 404)
-     *         or Method Not Allowed (status code 405)
+     * or Forbidden (status code 403)
+     * or Not Found (status code 404)
+     * or Method Not Allowed (status code 405)
      */
-    @ApiOperation(value = "returns a single settlement by ID", nickname = "getSettlementById", notes = "Retrieve a settlement by its unique identifier", response = SettlementModel.class, tags={ "settlements", })
+    @ApiOperation(value = "returns a single settlement by ID", nickname = "getSettlementById"
+            , notes = "Retrieve a settlement by its unique identifier"
+            //, response = SettlementModel.class
+            , response = APIResponseModel.class
+            , tags={ "settlements", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "single settlement", response = SettlementModel.class),
+        @ApiResponse(code = 200, message = "single settlement", response = APIResponseModel.class),
         @ApiResponse(code = 403, message = "Forbidden"),
         @ApiResponse(code = 404, message = "Not Found"),
         @ApiResponse(code = 405, message = "Method Not Allowed") })
@@ -160,7 +160,7 @@ public interface SettlementsApi {
         value = "/settlement/{id}",
         produces = { "application/json" }
     )
-    default ResponseEntity<SettlementModel> getSettlementById(@ApiParam(value = "the unique resource identifier for the document",required=true) @PathVariable("id") UUID id) {
+    default APIResponseModel getSettlementById(@ApiParam(value = "the unique resource identifier for the document",required=true) @PathVariable("id") UUID id) {
         return getDelegate().getSettlementById(id);
     }
 
@@ -169,14 +169,17 @@ public interface SettlementsApi {
      * POST /settlement/{id} : Mark a settlement as paid, aggregated, or cancelled
      * Allows a &#x60;netSettlementId&#x60;, &#x60;paymentId&#x60;, or &#x60;cancellationId&#x60; to be added to a settlement. Once an ID has been added, it cannot be updated or removed. Settlements that already have either a &#x60;netSettlementId&#x60; or &#x60;paymentId&#x60; cannot be cancelled by giving them a &#x60;cancellationId&#x60;. You can add a &#x60;netSettlementId&#x60; and a &#x60;paymentId&#x60; together in the same call if you wish.
      *
-     * @param id the unique resource identifier for the document (required)
+     * @param id                       the unique resource identifier for the document (required)
      * @param optionalIdentifiersModel identifier(s) to be added (required)
      * @return the attribute(s) requested have been added to the record (status code 200)
-     *         or Errors occurred (status code 400)
-     *         or Forbidden (status code 403)
-     *         or Errors occurred (status code 409)
+     * or Errors occurred (status code 400)
+     * or Forbidden (status code 403)
+     * or Errors occurred (status code 409)
      */
-    @ApiOperation(value = "Mark a settlement as paid, aggregated, or cancelled", nickname = "markSettlement", notes = "Allows a `netSettlementId`, `paymentId`, or `cancellationId` to be added to a settlement. Once an ID has been added, it cannot be updated or removed. Settlements that already have either a `netSettlementId` or `paymentId` cannot be cancelled by giving them a `cancellationId`. You can add a `netSettlementId` and a `paymentId` together in the same call if you wish.", tags={ "settlements", })
+    @ApiOperation(value = "Mark a settlement as paid, aggregated, or cancelled"
+            , nickname = "markSettlement"
+            , notes = "Allows a `netSettlementId`, `paymentId`, or `cancellationId` to be added to a settlement. Once an ID has been added, it cannot be updated or removed. Settlements that already have either a `netSettlementId` or `paymentId` cannot be cancelled by giving them a `cancellationId`. You can add a `netSettlementId` and a `paymentId` together in the same call if you wish."
+            , tags={ "settlements", })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "the attribute(s) requested have been added to the record"),
         @ApiResponse(code = 400, message = "Errors occurred", response = ProblemFormatItemModel.class, responseContainer = "List"),
@@ -188,7 +191,11 @@ public interface SettlementsApi {
         produces = { "application/problem+json" },
         consumes = { "application/json" }
     )
-    default ResponseEntity<Void> markSettlement(@ApiParam(value = "the unique resource identifier for the document",required=true) @PathVariable("id") UUID id,@ApiParam(value = "identifier(s) to be added" ,required=true )  @Valid @RequestBody OptionalIdentifiersModel optionalIdentifiersModel) {
+    default APIResponseModel markSettlement(
+            @ApiParam(value = "the unique resource identifier for the document",required=true)
+                @PathVariable("id") UUID id,
+            @ApiParam(value = "identifier(s) to be added" ,required=true )
+                @Valid @RequestBody OptionalIdentifiersModel optionalIdentifiersModel) {
         return getDelegate().markSettlement(id, optionalIdentifiersModel);
     }
 

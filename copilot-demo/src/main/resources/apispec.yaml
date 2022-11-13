@@ -5,12 +5,9 @@ info:
   description: Settlement domain API
   contact:
     email: you@your-company.com
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
   version: 1.1.0
 servers:
-  - url: https://localhost:8080/stl/settlement/1.1.0
+  - url: http://localhost:8080/stl/settlement/1.1.0
     description: SwaggerHub API Auto Mocking
 tags:
   - name: settlements
@@ -41,7 +38,7 @@ paths:
           description: single calendar entry
           headers:
             ETag:
-              description: an optimistic lock token respresenting the resource state; usually a hex-encoded MD5 hash value
+              description: an optimistic lock token representing the resource state; usually a hex-encoded MD5 hash value
               style: simple
               explode: false
               schema:
@@ -74,7 +71,7 @@ paths:
             example: 2022-06-03
         - name: If-Match
           in: header
-          description: an optimistic lock token respresenting the resource state; usually a hex-encoded MD5 hash value. Obtained from the `Etag` response header of a previous GET request for the resource.
+          description: an optimistic lock token representing the resource state; usually a hex-encoded MD5 hash value. Obtained from the `Etag` response header of a previous GET request for the resource.
           required: true
           style: simple
           explode: false
@@ -91,7 +88,7 @@ paths:
           description: calendar entry updated
           headers:
             ETag:
-              description: an optimistic lock token respresenting the resource state; usually a hex-encoded MD5 hash value
+              description: an optimistic lock token representing the resource state; usually a hex-encoded MD5 hash value
               style: simple
               explode: false
               schema:
@@ -186,7 +183,7 @@ paths:
           description: single settlement
           headers:
             ETag:
-              description: an optimistic lock token respresenting the resource state; usually a hex-encoded MD5 hash value
+              description: an optimistic lock token representing the resource state; usually a hex-encoded MD5 hash value
               style: simple
               explode: false
               schema:
@@ -260,7 +257,7 @@ paths:
             format: uuid
         - name: If-Match
           in: header
-          description: an optimistic lock token respresenting the resource state; usually a hex-encoded MD5 hash value. Obtained from the `Etag` response header of a previous GET request for the resource.
+          description: an optimistic lock token representing the resource state; usually a hex-encoded MD5 hash value. Obtained from the `Etag` response header of a previous GET request for the resource.
           required: true
           style: simple
           explode: false
@@ -298,7 +295,7 @@ paths:
         required: true
       responses:
         "201":
-          description: item created
+          description: Settlement item created
           headers:
             Location:
               description: the URL of the newly-created settlement
@@ -307,9 +304,9 @@ paths:
               schema:
                 type: string
                 format: url
-              example: https:api.dxc.com/settlements/1/settlement/eb90fc4f-1506-4bc4-8d5a-76abbbcf5794
+              example: http://localhost:8080/stl/settlement/1.1.0/settlement/eb90fc4f-1506-4bc4-8d5a-76abbbcf5794
             ETag:
-              description: an optimistic lock token respresenting the resource state; usually a hex-encoded MD5 hash value
+              description: an optimistic lock token representing the resource state; usually a hex-encoded MD5 hash value
               style: simple
               explode: false
               schema:
@@ -582,7 +579,7 @@ components:
         type:
           type: string
           format: uri
-          example: https://dxc.com/typerror/premium/2470
+          example: http://localhost:8080/typerror/premium/2470
         title:
           type: string
           example: title example
@@ -805,3 +802,4 @@ components:
           description: The metadata value. This value is not indexed, meaning that it is not suited to searching.
           example: 5 years
       description: Metadata is made up of a key and a value
+...

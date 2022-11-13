@@ -1,5 +1,6 @@
 package com.gcp.copilotdemo.api;
 
+import com.gcp.copilotdemo.model.APIResponseModel;
 import com.gcp.copilotdemo.model.KeyValuePairModel;
 import java.util.List;
 import java.time.OffsetDateTime;
@@ -26,18 +27,20 @@ public interface SettlementsApiDelegate {
         return Optional.empty();
     }
 
+    APIResponseModel response = new APIResponseModel();
+
     /**
      * POST /settlement : adds a new settlement
      * Creates a new settlement. All data fields are validated
      *
      * @param settlementModel settlement to be created (required)
-     * @return item created (status code 201)
-     *         or Errors occurred (status code 400)
-     *         or Forbidden (status code 403)
-     *         or an existing duplicate item already exists (status code 409)
+     * @return Settlement item created (status code 201)
+     * or Errors occurred (status code 400)
+     * or Forbidden (status code 403)
+     * or an existing duplicate item already exists (status code 409)
      * @see SettlementsApi#createSettlement
      */
-    default ResponseEntity<SettlementModel> createSettlement(SettlementModel settlementModel) {
+    default APIResponseModel createSettlement(SettlementModel settlementModel) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
@@ -47,7 +50,8 @@ public interface SettlementsApiDelegate {
                 }
             }
         });
-        return new ResponseEntity<>(HttpStatus.OK);
+        //return new ResponseEntity<>(HttpStatus.OK);
+        return response;
     }
 
     /**
@@ -127,12 +131,12 @@ public interface SettlementsApiDelegate {
      *
      * @param id the unique resource identifier for the document (required)
      * @return single settlement (status code 200)
-     *         or Forbidden (status code 403)
-     *         or Not Found (status code 404)
-     *         or Method Not Allowed (status code 405)
+     * or Forbidden (status code 403)
+     * or Not Found (status code 404)
+     * or Method Not Allowed (status code 405)
      * @see SettlementsApi#getSettlementById
      */
-    default ResponseEntity<SettlementModel> getSettlementById(UUID id) {
+    default APIResponseModel getSettlementById(UUID id) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
@@ -142,7 +146,8 @@ public interface SettlementsApiDelegate {
                 }
             }
         });
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+        //return new ResponseEntity<>(HttpStatus.OK);
+        return response;
 
     }
 
@@ -150,17 +155,17 @@ public interface SettlementsApiDelegate {
      * POST /settlement/{id} : Mark a settlement as paid, aggregated, or cancelled
      * Allows a &#x60;netSettlementId&#x60;, &#x60;paymentId&#x60;, or &#x60;cancellationId&#x60; to be added to a settlement. Once an ID has been added, it cannot be updated or removed. Settlements that already have either a &#x60;netSettlementId&#x60; or &#x60;paymentId&#x60; cannot be cancelled by giving them a &#x60;cancellationId&#x60;. You can add a &#x60;netSettlementId&#x60; and a &#x60;paymentId&#x60; together in the same call if you wish.
      *
-     * @param id the unique resource identifier for the document (required)
+     * @param id                       the unique resource identifier for the document (required)
      * @param optionalIdentifiersModel identifier(s) to be added (required)
      * @return the attribute(s) requested have been added to the record (status code 200)
-     *         or Errors occurred (status code 400)
-     *         or Forbidden (status code 403)
-     *         or Errors occurred (status code 409)
+     * or Errors occurred (status code 400)
+     * or Forbidden (status code 403)
+     * or Errors occurred (status code 409)
      * @see SettlementsApi#markSettlement
      */
-    default ResponseEntity<Void> markSettlement(UUID id,
-        OptionalIdentifiersModel optionalIdentifiersModel) {
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    default APIResponseModel markSettlement(UUID id, OptionalIdentifiersModel optionalIdentifiersModel) {
+        // return new ResponseEntity<>(HttpStatus.OK);
+        return response;
 
     }
 

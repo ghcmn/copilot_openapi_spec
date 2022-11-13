@@ -6,7 +6,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.7.5</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/>
 	</parent>
 	<groupId>com.gcp</groupId>
 	<artifactId>copilot-demo</artifactId>
@@ -105,7 +105,7 @@
 			</plugin>
 
 			<!-- add plugin from openapi-generator to read from apispec.yaml file -->
-			<plugin>
+			<!-- <plugin>
 				<groupId>org.openapitools</groupId>
 				<artifactId>openapi-generator-maven-plugin</artifactId>
 				<version>5.2.1</version>
@@ -130,7 +130,7 @@
 								<modelPackage>com.gcp.copilotdemo.model</modelPackage>
 								<apiPackage>com.gcp.copilotdemo.api</apiPackage>
 								<delegatePattern>true</delegatePattern>
-								<!--interfaceOnly>true</interfaceOnly-->
+								<interfaceOnly>true</interfaceOnly>
 							</configOptions>
 							<output>${project.basedir}</output>
 							<generateApis>true</generateApis>
@@ -139,7 +139,7 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
+			</plugin> -->
 
 		</plugins>
 	</build>

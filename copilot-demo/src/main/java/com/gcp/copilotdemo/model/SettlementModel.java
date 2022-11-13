@@ -2,18 +2,10 @@ package com.gcp.copilotdemo.model;
 
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.gcp.copilotdemo.model.AuditBlockModel;
-import com.gcp.copilotdemo.model.OptionalIdentifiersModel;
-import com.gcp.copilotdemo.model.OriginatingIdentifiersModel;
-import com.gcp.copilotdemo.model.PaymentDetailsModel;
-import com.gcp.copilotdemo.model.PaymentMethodModel;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.UUID;
-import org.openapitools.jackson.nullable.JsonNullable;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 
@@ -60,14 +52,13 @@ public class SettlementModel   {
 
   /**
    * unique ID of this settlement
+   *
    * @return id
-  */
+   */
   @ApiModelProperty(readOnly = true, value = "unique ID of this settlement")
 
-  @Valid
-
-  public UUID getId() {
-    return id;
+  public String getId() {
+    return String.valueOf(id);
   }
 
   public void setId(UUID id) {
