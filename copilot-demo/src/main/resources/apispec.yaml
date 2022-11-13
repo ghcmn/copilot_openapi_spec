@@ -1,0 +1,807 @@
+---
+openapi: 3.0.0
+info:
+  title: Settlement API
+  description: Settlement domain API
+  contact:
+    email: you@your-company.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.1.0
+servers:
+  - url: https://localhost:8080/stl/settlement/1.1.0
+    description: SwaggerHub API Auto Mocking
+tags:
+  - name: settlements
+    description: Operations for settlements
+  - name: calendars
+    description: Operations for settlement date calendars
+paths:
+  /calendar/{date}:
+    get:
+      tags:
+        - calendars
+      summary: the GET method for a single calendar day
+      description: Retrieve a calendar day for display or update
+      operationId: getSettlementCalendarByDate
+      parameters:
+        - name: date
+          in: path
+          description: the unique resource identifier for the document
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+            format: date
+            example: 2022-12-31
+      responses:
+        "200":
+          description: single calendar entry
+          headers:
+            ETag:
+              description: an optimistic lock token respresenting the resource state; usually a hex-encoded MD5 hash value
+              style: simple
+              explode: false
+              schema:
+                type: string
+              example: 43c191bf6d6c3f263a8cd0efd4a058ab
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/calendarDay'
+        "403":
+          description: Forbidden
+        "405":
+          description: Method Not Found
+    put:
+      tags:
+        - calendars
+      summary: the PUT method for a single calendar day
+      description: Updates a calendar day record
+      operationId: updateSettlementCalendarDay
+      parameters:
+        - name: date
+          in: path
+          description: the unique resource identifier for the document
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+            format: date
+            example: 2022-06-03
+        - name: If-Match
+          in: header
+          description: an optimistic lock token respresenting the resource state; usually a hex-encoded MD5 hash value. Obtained from the `Etag` response header of a previous GET request for the resource.
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+          example: 43c191bf6d6c3f263a8cd0efd4a058ab
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/calendarDay'
+      responses:
+        "200":
+          description: calendar entry updated
+          headers:
+            ETag:
+              description: an optimistic lock token respresenting the resource state; usually a hex-encoded MD5 hash value
+              style: simple
+              explode: false
+              schema:
+                type: string
+              example: 43c191bf6d6c3f263a8cd0efd4a058ab
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/calendarDay'
+        "400":
+          description: Errors occurred
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/problemFormat'
+        "403":
+          description: Forbidden
+        "409":
+          description: Conflict - the `If-Match` value supplied on the request does not match the current `Etag` of the record
+  /calendar/next:
+    get:
+      tags:
+        - calendars
+      summary: Obtain the next available settlement date
+      description: Returns the next settlement date for a given planned date, currency, and payment method.
+      operationId: getNextSettlementDate
+      parameters:
+        - name: paymentMethod
+          in: query
+          description: The payment method
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: string
+            example: STFO
+            enum:
+              - STFO
+              - SWIFT
+        - name: plannedDate
+          in: query
+          description: The date for the proposed payment
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: string
+            format: date
+            example: 2021-12-31
+        - name: currency
+          in: query
+          description: The settlement currency
+          required: true
+          style: form
+          explode: true
+          schema:
+            $ref: '#/components/schemas/currency'
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/nextSettlementDay'
+        "400":
+          description: Errors occurred
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/problemFormat'
+        "403":
+          description: Forbidden
+  /settlement/{id}:
+    get:
+      tags:
+        - settlements
+      summary: returns a single settlement by ID
+      description: Retrieve a settlement by its unique identifier
+      operationId: getSettlementById
+      parameters:
+        - name: id
+          in: path
+          description: the unique resource identifier for the document
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: single settlement
+          headers:
+            ETag:
+              description: an optimistic lock token respresenting the resource state; usually a hex-encoded MD5 hash value
+              style: simple
+              explode: false
+              schema:
+                type: string
+              example: 43c191bf6d6c3f263a8cd0efd4a058ab
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settlement'
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "405":
+          description: Method Not Allowed
+    post:
+      tags:
+        - settlements
+      summary: Mark a settlement as paid, aggregated, or cancelled
+      description: Allows a `netSettlementId`, `paymentId`, or `cancellationId` to be added to a settlement. Once an ID has been added, it cannot be updated or removed. Settlements that already have either a `netSettlementId` or `paymentId` cannot be cancelled by giving them a `cancellationId`. You can add a `netSettlementId` and a `paymentId` together in the same call if you wish.
+      operationId: markSettlement
+      parameters:
+        - name: id
+          in: path
+          description: the unique resource identifier for the document
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: identifier(s) to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OptionalIdentifiers'
+        required: true
+      responses:
+        "200":
+          description: the attribute(s) requested have been added to the record
+        "400":
+          description: Errors occurred
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/problemFormat'
+        "403":
+          description: Forbidden
+        "409":
+          description: Errors occurred
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/problemFormat'
+    delete:
+      tags:
+        - settlements
+      summary: Delete a settlement record
+      description: Hard delete of a settlement record. Intended for use only in testing and possibly by applications support staff. Does not check to see if the record has already been aggregated, cancelled or paid. _Caveat emptor..._
+      operationId: deleteSettlement
+      parameters:
+        - name: id
+          in: path
+          description: the unique resource identifier for the settlement
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+            format: uuid
+        - name: If-Match
+          in: header
+          description: an optimistic lock token respresenting the resource state; usually a hex-encoded MD5 hash value. Obtained from the `Etag` response header of a previous GET request for the resource.
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+          example: 43c191bf6d6c3f263a8cd0efd4a058ab
+      responses:
+        "204":
+          description: Successful deletion
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/problemFormat'
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "409":
+          description: Conflict - the `If-Match` value supplied on the request does not match the current `Etag` of the record
+  /settlement:
+    post:
+      tags:
+        - settlements
+      summary: adds a new settlement
+      description: Creates a new settlement. All data fields are validated
+      operationId: createSettlement
+      requestBody:
+        description: settlement to be created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Settlement'
+        required: true
+      responses:
+        "201":
+          description: item created
+          headers:
+            Location:
+              description: the URL of the newly-created settlement
+              style: simple
+              explode: false
+              schema:
+                type: string
+                format: url
+              example: https:api.dxc.com/settlements/1/settlement/eb90fc4f-1506-4bc4-8d5a-76abbbcf5794
+            ETag:
+              description: an optimistic lock token respresenting the resource state; usually a hex-encoded MD5 hash value
+              style: simple
+              explode: false
+              schema:
+                type: string
+              example: 43c191bf6d6c3f263a8cd0efd4a058ab
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settlement'
+        "400":
+          description: Errors occurred
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/problemFormat'
+        "403":
+          description: Forbidden
+        "409":
+          description: an existing duplicate item already exists
+  /search:
+    get:
+      tags:
+        - settlements
+      summary: Find settlements that are eligible for aggregation
+      description: Finds settlements with the same payment method between two dateTimes, that haven't already been aggregated. Settlements that have **any** of the optional identifiers will not be included in the returned list, as they have previously been aggregated, paid, or cancelled.
+      operationId: findSettlementsForAggregation
+      parameters:
+        - name: paymentMethod
+          in: query
+          description: The payment method. All settlements returned will have this payment method.
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: string
+            example: STFO
+            enum:
+              - STFO
+              - SWIFT
+              - VITESSE
+              - NONE
+        - name: from
+          in: query
+          description: The exclusive lower bound for selection. All settlements selected will have a `scheduleDate` greater than this value.
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          description: The inclusive upper bound for selection. All settlements selected will have a `scheduleDate` less than or equal to this value.
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: string
+            format: date-time
+      responses:
+        "200":
+          description: Success. Note that no matching items (empty array returned) is considered a successful execution.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Settlement'
+        "400":
+          description: Errors occurred
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/problemFormat'
+        "403":
+          description: Forbidden
+    post:
+      tags:
+        - settlements
+      summary: Find settlements that meet specific search criteria
+      description: A flexible search capability. Currently using a POST method due to restrictions in OpenAPI 3.0.0, but this will be deprecated later in favour of a GET with a request body which is allowed at OpenAPI 3.0.3...
+      operationId: findSettlements
+      requestBody:
+        description: Name-value pairs for keyword searches. All search criteria are ANDed together to filter the results
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/searchCriteria'
+        required: true
+      responses:
+        "200":
+          description: Success. Note that no matching items (empty array returned) is considered a successful execution.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Settlement'
+        "400":
+          description: Errors occurred
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/problemFormat'
+        "403":
+          description: Forbidden
+components:
+  schemas:
+    calendarDay:
+      required:
+        - calendarDate
+        - currencies
+      type: object
+      properties:
+        calendarDate:
+          type: string
+          description: The date of this calendar entry
+          format: date
+          example: 2022-12-31
+        currencies:
+          maxItems: 14
+          minItems: 14
+          type: array
+          description: There must be one entry for each of the 14 supported currencies
+          example: |
+            [
+              {
+                'currency': 'AUD',
+                'stfoSettlementAllowed': true,
+                'swiftSettlementAllowed': true
+              },
+              {
+                'currency': 'CAD',
+                'stfoSettlementAllowed': true,
+                'swiftSettlementAllowed': true
+              },
+              {
+                'currency': 'CHF',
+                'stfoSettlementAllowed': true,
+                'swiftSettlementAllowed': true
+              },
+              {
+                'currency': 'DKK',
+                'stfoSettlementAllowed': true,
+                'swiftSettlementAllowed': true
+              },
+              {
+                'currency': 'EUR',
+                'stfoSettlementAllowed': true,
+                'swiftSettlementAllowed': true
+              },
+              {
+                'currency': 'GBP',
+                'stfoSettlementAllowed': false,
+                'swiftSettlementAllowed': false
+              },
+              {
+                'currency': 'HKD',
+                'stfoSettlementAllowed': true,
+                'swiftSettlementAllowed': true
+              },
+              {
+                'currency': 'JPY',
+                'stfoSettlementAllowed': true,
+                'swiftSettlementAllowed': true
+              },
+              {
+                'currency': 'NOK',
+                'stfoSettlementAllowed': true,
+                'swiftSettlementAllowed': true
+              },
+              {
+                'currency': 'NZD',
+                'stfoSettlementAllowed': true,
+                'swiftSettlementAllowed': true
+              },
+              {
+                'currency': 'SEK',
+                'stfoSettlementAllowed': true,
+                'swiftSettlementAllowed': true
+              },
+              {
+                'currency': 'SGD',
+                'stfoSettlementAllowed': true,
+                'swiftSettlementAllowed': true
+              },
+              {
+                'currency': 'USD',
+                'stfoSettlementAllowed': true,
+                'swiftSettlementAllowed': true
+              },
+              {
+                'currency': 'ZAR',
+                'stfoSettlementAllowed': true,
+                'swiftSettlementAllowed': true
+              }
+            ]
+          items:
+            $ref: '#/components/schemas/currencyEntry'
+        audit:
+          $ref: '#/components/schemas/auditBlock'
+      description: A day in the settlement calendar. For each supported currency, shows whether or not this day is allowed for settlements.
+    currencyEntry:
+      required:
+        - currency
+        - stfoSettlementAllowed
+        - swiftSettlementAllowed
+      type: object
+      properties:
+        currency:
+          $ref: '#/components/schemas/currency'
+        stfoSettlementAllowed:
+          type: boolean
+          description: Whether or not settlement is allowed in this currency for STFO
+          example: true
+        swiftSettlementAllowed:
+          type: boolean
+          description: Whether or not settlement is allowed in this currency for Swift
+          example: true
+      description: settlement status of the currency
+    currency:
+      type: string
+      description: ISO alpha-3 currency code. There are 14 allowed settlement currencies
+      example: NOK
+      enum:
+        - AUD
+        - CAD
+        - CHF
+        - DKK
+        - EUR
+        - GBP
+        - HKD
+        - JPY
+        - NOK
+        - NZD
+        - SEK
+        - SGD
+        - USD
+        - ZAR
+    auditBlock:
+      required:
+        - at
+        - user
+      type: object
+      properties:
+        user:
+          type: string
+          description: The identifier of the user or system user that modified the record
+          example: svc99
+        at:
+          type: string
+          description: UTC timestamp of the record modification
+          format: date-time
+          example: 2021-03-03T08:24:51Z
+      description: The data in the audit block is populated directly by the API from the security context when the record is modified
+      readOnly: true
+    problemFormat:
+      type: array
+      description: The problem format.
+      items:
+        $ref: '#/components/schemas/problemFormatItem'
+    problemFormatItem:
+      required:
+        - domain
+        - errorCode
+        - title
+        - type
+      type: object
+      properties:
+        type:
+          type: string
+          format: uri
+          example: https://dxc.com/typerror/premium/2470
+        title:
+          type: string
+          example: title example
+        detail:
+          type: string
+          example: Detailed description of the problem
+        domain:
+          type: string
+          example: PREMIUM
+          enum:
+            - RISK
+            - PREMIUM
+            - CLAIM
+            - DOCUMENT
+            - EXPERTFEES
+            - PARTY
+            - NOTIFICATION
+            - SETTLEMENTS
+        errorCode:
+          type: integer
+          format: int32
+          example: 2470
+    nextSettlementDay:
+      required:
+        - currency
+        - nextSettlementDate
+      type: object
+      properties:
+        currency:
+          $ref: '#/components/schemas/currency'
+        nextSettlementDate:
+          type: string
+          description: The next settlement date for this currency
+          format: date
+          example: 2022-12-31
+      description: Next available settlement date for a currency
+    Settlement:
+      required:
+        - amount
+        - credit
+        - currency
+        - debit
+        - originatingIdentifiers
+        - paymentMethod
+        - scheduleDate
+      type: object
+      properties:
+        id:
+          type: string
+          description: unique ID of this settlement
+          format: uuid
+          readOnly: true
+        paymentMethod:
+          $ref: '#/components/schemas/paymentMethod'
+        scheduleDate:
+          type: string
+          description: The earliest time that this settlement can be paid
+          format: date-time
+          example: 2021-08-29T09:12:33.001Z
+        exchangeRate:
+          minimum: 0.000001
+          type: number
+          description: The rate used to convert the debit currency to the credit currency. When both currencies are the same this has a value of 1 (the default)
+          nullable: false
+          example: 1
+          default: 1
+        debit:
+          $ref: '#/components/schemas/PaymentDetails'
+        credit:
+          $ref: '#/components/schemas/PaymentDetails'
+        optionalIdentifiers:
+          $ref: '#/components/schemas/OptionalIdentifiers'
+        uniqueRef:
+          type: string
+          description: the checksum of all the attributes contained in the OriginatingIdentifiers object. Used to enforce uniqueness when creating new resources
+          readOnly: true
+          example: 77add1d5f41223d5582fca736a5cb335
+        originatingIdentifiers:
+          $ref: '#/components/schemas/OriginatingIdentifiers'
+        audit:
+          $ref: '#/components/schemas/auditBlock'
+    paymentMethod:
+      type: string
+      description: The payment method to be used for this settlement
+      example: STFO
+      enum:
+        - SWIFT
+        - VITESSE
+        - STFO
+        - NONE
+    PaymentDetails:
+      required:
+        - accountIdentifier
+        - amount
+        - currency
+      type: object
+      properties:
+        accountIdentifier:
+          pattern: \w+
+          type: string
+          description: An identifier for the account. The format is dependent on the value of the paymentMethod attribute
+          example: GB33BUKB20201555555556
+        currency:
+          $ref: '#/components/schemas/currency'
+        amount:
+          minimum: 0.001
+          type: number
+          description: The amount of the transaction. It is interpereted as a decimal number. Note that currencies can have zero, two, or even three decimal places.
+          example: 2999.99
+    OptionalIdentifiers:
+      type: object
+      properties:
+        netSettlementId:
+          type: string
+          description: If this settlement has been aggregated, the ID of the netSettlement it belongs to
+          format: uuid
+          example: d5eecee5-6173-4c94-8e01-26cef1dbde5a
+        paymentId:
+          type: string
+          description: If this settlement has been paid, the ID of the payment it belongs to
+          format: uuid
+          example: 13356f3d-fcff-423b-870f-553fac0675f1
+        cancellationId:
+          type: string
+          description: If this settlement has been cancelled, the ID of the cancellation request
+          format: uuid
+          example: 37e9882a-984f-453e-a676-ed9e841c3150
+      readOnly: true
+    OriginatingIdentifiers:
+      required:
+        - application
+      type: object
+      properties:
+        application:
+          type: string
+          description: The originating application domain
+          example: TREATY
+          enum:
+            - TREATY
+            - CLAIM
+            - PREMIUM
+        treatyIds:
+          $ref: '#/components/schemas/TreatyIds'
+        claimIds:
+          $ref: '#/components/schemas/ClaimIds'
+        premiumIds:
+          $ref: '#/components/schemas/PremiumIds'
+      description: External identifiers. Only one of `treatyIds`, `claimIds` or `premiumIds` may be present.
+    TreatyIds:
+      required:
+        - brokerGroupId
+        - brokerId
+        - lineItem
+        - statementId
+        - treatyId
+      type: object
+      properties:
+        treatyId:
+          pattern: \w+
+          type: string
+          description: Treaty identifier
+          example: "123456789"
+        brokerId:
+          pattern: \w+
+          type: string
+          description: broker ID, identifies the submitting broker
+          example: "666"
+        brokerGroupId:
+          type: string
+          description: broker group ID, used to group statements together for submission
+          example: xyz775
+        statementId:
+          pattern: \w+
+          type: string
+          description: statement ID
+          example: s123456
+        lineItem:
+          pattern: \w+
+          type: string
+          description: line item on a statement
+          example: "17"
+    ClaimIds:
+      required:
+        - claimId
+      type: object
+      properties:
+        claimId:
+          pattern: \w+
+          type: string
+          description: claim unique identifier
+          example: c1234
+    PremiumIds:
+      required:
+        - premiumId
+      type: object
+      properties:
+        premiumId:
+          pattern: \w+
+          type: string
+          description: premium unique identifier
+          example: c1234
+    searchCriteria:
+      minItems: 2
+      type: array
+      description: key-value pairs for the search criteria
+      items:
+        $ref: '#/components/schemas/keyValuePair'
+    keyValuePair:
+      required:
+        - key
+        - value
+      type: object
+      properties:
+        key:
+          type: string
+          description: The metadata key. This value is indexed, so it is suitable for searching
+          example: Minimum term
+        value:
+          type: string
+          description: The metadata value. This value is not indexed, meaning that it is not suited to searching.
+          example: 5 years
+      description: Metadata is made up of a key and a value
