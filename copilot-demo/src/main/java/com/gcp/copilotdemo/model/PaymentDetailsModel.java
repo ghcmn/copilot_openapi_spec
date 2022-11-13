@@ -114,11 +114,10 @@ public class PaymentDetailsModel   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class PaymentDetailsModel {\n");
-    
-    sb.append("    accountIdentifier: ").append(toIndentedString(accountIdentifier)).append("\n");
-    sb.append("    currency: ").append(toIndentedString(currency)).append("\n");
-    sb.append("    amount: ").append(toIndentedString(amount)).append("\n");
+    sb.append("{");
+    sb.append("'accountIdentifier': '").append(toIndentedString(accountIdentifier)).append("',");
+    sb.append("'currency': '").append(toIndentedString(currency)).append("',");
+    sb.append("'amount': ").append(toIndentedString(amount));
     sb.append("}");
     return sb.toString();
   }

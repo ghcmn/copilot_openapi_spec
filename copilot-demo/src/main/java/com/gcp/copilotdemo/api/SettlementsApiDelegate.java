@@ -17,7 +17,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import java.util.Optional;
 
 /**
- * A delegate to be called by the {@link settlementsApiController}}.
+ * A delegate to be called by the {@link SettlementsApiController}}.
  * Implement this interface with a {@link org.springframework.stereotype.Service} annotated class.
  */
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2022-11-13T12:08:29.158795400+05:30[Asia/Calcutta]")

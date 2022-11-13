@@ -59,9 +59,8 @@ public class ClaimIdsModel   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ClaimIdsModel {\n");
-    
-    sb.append("    claimId: ").append(toIndentedString(claimId)).append("\n");
+    sb.append("{");
+    sb.append("'claimId': '").append(toIndentedString(claimId)).append("'");
     sb.append("}");
     return sb.toString();
   }

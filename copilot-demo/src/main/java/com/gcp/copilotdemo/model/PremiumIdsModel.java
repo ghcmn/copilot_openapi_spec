@@ -59,9 +59,8 @@ public class PremiumIdsModel   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class PremiumIdsModel {\n");
-    
-    sb.append("    premiumId: ").append(toIndentedString(premiumId)).append("\n");
+    sb.append("{");
+    sb.append("'premiumId': '").append(toIndentedString(premiumId)).append("'");
     sb.append("}");
     return sb.toString();
   }

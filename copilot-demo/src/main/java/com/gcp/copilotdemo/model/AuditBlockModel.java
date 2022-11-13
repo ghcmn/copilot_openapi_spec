@@ -88,10 +88,9 @@ public class AuditBlockModel   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class AuditBlockModel {\n");
-    
-    sb.append("    user: ").append(toIndentedString(user)).append("\n");
-    sb.append("    at: ").append(toIndentedString(at)).append("\n");
+    sb.append("{");
+    sb.append("'user': '").append(toIndentedString(user)).append("',");
+    sb.append("'at': '").append(toIndentedString(at)).append("'");
     sb.append("}");
     return sb.toString();
   }

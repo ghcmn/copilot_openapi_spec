@@ -159,13 +159,13 @@ public class TreatyIdsModel   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class TreatyIdsModel {\n");
+    sb.append("{");
     
-    sb.append("    treatyId: ").append(toIndentedString(treatyId)).append("\n");
-    sb.append("    brokerId: ").append(toIndentedString(brokerId)).append("\n");
-    sb.append("    brokerGroupId: ").append(toIndentedString(brokerGroupId)).append("\n");
-    sb.append("    statementId: ").append(toIndentedString(statementId)).append("\n");
-    sb.append("    lineItem: ").append(toIndentedString(lineItem)).append("\n");
+    sb.append("'treatyId': '").append(toIndentedString(treatyId)).append("',");
+    sb.append("'brokerId': '").append(toIndentedString(brokerId)).append("',");
+    sb.append("'brokerGroupId': '").append(toIndentedString(brokerGroupId)).append("',");
+    sb.append("'statementId': '").append(toIndentedString(statementId)).append("',");
+    sb.append("'lineItem': '").append(toIndentedString(lineItem)).append("'");
     sb.append("}");
     return sb.toString();
   }

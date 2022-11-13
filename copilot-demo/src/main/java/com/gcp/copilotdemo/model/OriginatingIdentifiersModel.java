@@ -79,8 +79,6 @@ public class OriginatingIdentifiersModel   {
   */
   @ApiModelProperty(example = "TREATY", required = true, value = "The originating application domain")
   @NotNull
-
-
   public ApplicationEnum getApplication() {
     return application;
   }
@@ -176,12 +174,11 @@ public class OriginatingIdentifiersModel   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class OriginatingIdentifiersModel {\n");
-    
-    sb.append("    application: ").append(toIndentedString(application)).append("\n");
-    sb.append("    treatyIds: ").append(toIndentedString(treatyIds)).append("\n");
-    sb.append("    claimIds: ").append(toIndentedString(claimIds)).append("\n");
-    sb.append("    premiumIds: ").append(toIndentedString(premiumIds)).append("\n");
+    sb.append("{");
+    sb.append("'application': '").append(toIndentedString(application)).append("',");
+    sb.append("'treatyIds': ").append(toIndentedString(treatyIds)).append(",");
+    sb.append("'claimIds': ").append(toIndentedString(claimIds)).append(",");
+    sb.append("'premiumIds': ").append(toIndentedString(premiumIds));
     sb.append("}");
     return sb.toString();
   }

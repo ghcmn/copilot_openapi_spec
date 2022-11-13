@@ -110,11 +110,10 @@ public class OptionalIdentifiersModel   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class OptionalIdentifiersModel {\n");
-    
-    sb.append("    netSettlementId: ").append(toIndentedString(netSettlementId)).append("\n");
-    sb.append("    paymentId: ").append(toIndentedString(paymentId)).append("\n");
-    sb.append("    cancellationId: ").append(toIndentedString(cancellationId)).append("\n");
+    sb.append("{");
+    sb.append("'netSettlementId': '").append(toIndentedString(netSettlementId)).append("',");
+    sb.append("'paymentId': '").append(toIndentedString(paymentId)).append("',");
+    sb.append("'cancellationId': '").append(toIndentedString(cancellationId)).append("'");
     sb.append("}");
     return sb.toString();
   }

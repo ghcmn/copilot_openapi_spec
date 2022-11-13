@@ -289,18 +289,18 @@ public class SettlementModel   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class SettlementModel {\n");
+    sb.append("{");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    paymentMethod: ").append(toIndentedString(paymentMethod)).append("\n");
-    sb.append("    scheduleDate: ").append(toIndentedString(scheduleDate)).append("\n");
-    sb.append("    exchangeRate: ").append(toIndentedString(exchangeRate)).append("\n");
-    sb.append("    debit: ").append(toIndentedString(debit)).append("\n");
-    sb.append("    credit: ").append(toIndentedString(credit)).append("\n");
-    sb.append("    optionalIdentifiers: ").append(toIndentedString(optionalIdentifiers)).append("\n");
-    sb.append("    uniqueRef: ").append(toIndentedString(uniqueRef)).append("\n");
-    sb.append("    originatingIdentifiers: ").append(toIndentedString(originatingIdentifiers)).append("\n");
-    sb.append("    audit: ").append(toIndentedString(audit)).append("\n");
+    sb.append("'id': '").append(toIndentedString(id)).append("',");
+    sb.append("'paymentMethod': '").append(toIndentedString(paymentMethod)).append("',");
+    sb.append("'scheduleDate': '").append(toIndentedString(scheduleDate)).append("',");
+    sb.append("'exchangeRate': ").append(toIndentedString(exchangeRate)).append(",");
+    sb.append("'debit': ").append(toIndentedString(debit)).append(",");
+    sb.append("'credit': ").append(toIndentedString(credit)).append(",");
+    sb.append("'optionalIdentifiers': ").append(toIndentedString(optionalIdentifiers)).append(",");
+    sb.append("'uniqueRef': '").append(toIndentedString(uniqueRef)).append("',");
+    sb.append("'originatingIdentifiers': ").append(toIndentedString(originatingIdentifiers)).append(",");
+    sb.append("'audit': ").append(toIndentedString(audit));
     sb.append("}");
     return sb.toString();
   }

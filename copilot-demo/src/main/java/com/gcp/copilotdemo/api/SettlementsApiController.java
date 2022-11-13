@@ -1,12 +1,12 @@
 package com.gcp.copilotdemo.api;
 
+import com.gcp.copilotdemo.data.entity.Settlement;
 import com.gcp.copilotdemo.model.APIResponseModel;
 import com.gcp.copilotdemo.model.OptionalIdentifiersModel;
 import com.gcp.copilotdemo.model.SettlementModel;
-import com.gcp.copilotdemo.service.SettlementsService;
+import com.gcp.copilotdemo.service.SettlementServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,15 +15,15 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping()
-public class settlementsApiController implements SettlementsApi {
+public class SettlementsApiController implements SettlementsApi {
 
     private final SettlementsApiDelegate delegate;
 
-    // autowire SettlementsService
+    // autowire SettlementsServiceImpl
     @Autowired
-    SettlementsService settlementsService;
+    SettlementServiceImpl settlementsServiceImpl;
 
-    public settlementsApiController(@Autowired(required = false) SettlementsApiDelegate delegate) {
+    public SettlementsApiController(@Autowired(required = false) SettlementsApiDelegate delegate) {
         this.delegate = Optional.ofNullable(delegate).orElse(new SettlementsApiDelegate() {});
     }
 
@@ -36,7 +36,7 @@ public class settlementsApiController implements SettlementsApi {
     @Override
     public APIResponseModel createSettlement(SettlementModel settlementModel)
     {
-        ResponseEntity<SettlementModel> stl = settlementsService.createSettlement(settlementModel);
+        Settlement stl = settlementsServiceImpl.createSettlement(settlementModel);
 
         APIResponseModel response = new APIResponseModel();
         response.setSettlementId(settlementModel.getId());
@@ -49,11 +49,12 @@ public class settlementsApiController implements SettlementsApi {
     // override getSettlement method
     @Override
     public APIResponseModel getSettlementById(UUID settlementId) {
-        ResponseEntity<SettlementModel> stl = settlementsService.getSettlementById(settlementId);
+        Settlement stl = settlementsServiceImpl.getSettlementById(settlementId.toString());
 
         APIResponseModel response = new APIResponseModel();
-        response.setSettlementId(settlementId.toString());
-        response.setMessage("getSettlement By Id completed successfully");
+        response.setSettlementId(stl.getSettlement_id());
+        //response.setMessage("getSettlement By Id completed successfully");
+        response.setMessage(stl.getSettlement_details());
         response.setCode(HttpStatus.OK.toString());
 
         return response;
@@ -62,9 +63,20 @@ public class settlementsApiController implements SettlementsApi {
     // override markSettlement method
     @Override
     public APIResponseModel markSettlement(UUID settlementId, OptionalIdentifiersModel optionalIdentifiersModel) {
-        APIResponseModel response = settlementsService.markSettlement(settlementId, optionalIdentifiersModel);
+
+        APIResponseModel response = new APIResponseModel();
+        response.setSettlementId(settlementId.toString());
+
+        try {
+            Settlement settlement = settlementsServiceImpl.updateSettlement(settlementId.toString(), optionalIdentifiersModel);
+            response.setMessage("Settlement updated to " + settlement.getStatus());
+            response.setCode(HttpStatus.OK.toString());
+        }
+        catch (Exception e) {
+            response.setMessage(e.getMessage());
+            response.setCode(HttpStatus.BAD_REQUEST.toString());
+        }
 
         return response;
-        //return ResponseEntity.status(response.getCode()).body(response.getMessage());
     }
 }
